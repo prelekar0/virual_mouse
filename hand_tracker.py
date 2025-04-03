@@ -46,8 +46,8 @@ class HandTracker:
         self.hand_area_max = 100000  # Maximum area for a hand
         
         # Skin color detection parameters (in HSV space)
-        self.lower_skin = np.array([0, 20, 70], dtype=np.uint8)
-        self.upper_skin = np.array([20, 255, 255], dtype=np.uint8)
+        self.lower_skin = np.array([0, 30, 60], dtype=np.uint8)
+        self.upper_skin = np.array([20, 150, 255], dtype=np.uint8)
         
         # Init hand landmark positions
         self.landmarks = None
@@ -90,8 +90,8 @@ class HandTracker:
         
         # Apply morphological operations to clean up the skin mask
         kernel = np.ones((3, 3), np.uint8)
-        skin_mask = cv2.morphologyEx(skin_mask, cv2.MORPH_OPEN, kernel, iterations=1)
-        skin_mask = cv2.morphologyEx(skin_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+        skin_mask = cv2.morphologyEx(skin_mask, cv2.MORPH_OPEN, kernel, iterations=2)
+        skin_mask = cv2.morphologyEx(skin_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
         skin_mask = cv2.dilate(skin_mask, kernel, iterations=1)
         
         # Display the skin mask in a corner for debugging
@@ -149,11 +149,11 @@ class HandTracker:
         
         if hand_contour is not None:
             # Draw the main hand contour in a different color
-            cv2.drawContours(debug_img, [hand_contour], 0, (0, 255, 0), 2)
+            cv2.drawContours(debug_img, [hand_contour], 0, (0, 255, 0), 3)
             
-            # Get bounding rectangle and draw it
+            # Draw the bounding rectangle in a different color
             x, y, w, h = cv2.boundingRect(hand_contour)
-            cv2.rectangle(debug_img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            cv2.rectangle(debug_img, (x, y), (x+w, y+h), (0, 0, 255), 2)
             
             # Update ROI for future frames
             self.roi = (x, y, w, h)
@@ -276,6 +276,9 @@ class HandTracker:
         self.prev_landmarks = self.landmarks
         self.landmarks = landmarks
         self.debug_img = debug_img
+        
+        # Add more debug information
+        cv2.putText(debug_img, f"Contour Area: {max_area}", (10, h - 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
         
         # Create a class to mimic mediapipe's results structure
         class Results:
