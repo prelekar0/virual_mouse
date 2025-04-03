@@ -1,3 +1,6 @@
-opencv-python>=4.5.0
-numpy>=1.19.0
-pyautogui>=0.9.0 
+opencv-python==4.8.1.78
+mediapipe==0.10.13
+numpy==1.26.0
+pyautogui==0.9.54
+pynput==1.7.6
+setuptools>=65.5.1 
