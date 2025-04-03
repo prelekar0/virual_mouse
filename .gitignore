@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 .venv/
 myenv/
+=======
+venv/
+>>>>>>> 9cd29db (00:08 4APR)
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 *.pyw
+<<<<<<< HEAD
 *.pyz
+=======
+*.pyz
+>>>>>>> 9cd29db (00:08 4APR)
