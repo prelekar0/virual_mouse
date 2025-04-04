@@ -1,21 +1,23 @@
 # Virtual Mouse
 
-A Python-based virtual mouse that tracks hand movements using computer vision to control cursor movement, clicks, and scrolling with high precision and smooth performance.
+A computer vision-based virtual mouse controller that allows you to control your cursor and perform mouse actions using hand gestures. This application uses MediaPipe for hand tracking and translates hand movements and gestures into precise mouse control.
 
 ## Features
 
-- **Hand Tracking**: Accurately tracks hand landmarks in various lighting conditions using MediaPipe
-- **Cursor Control**: Smooth and responsive cursor movement based on hand position with dynamic speed adjustment
+- **Intuitive Gesture Control**: Natural hand gestures for all mouse operations
+- **Cursor Movement**: Control the cursor with index and middle fingers extended (peace sign)
 - **Click Actions**:
-  - Left Click: Middle finger extended (index finger down)
-  - Right Click: Index finger extended (middle finger down)
-  - Double Click: Index and middle fingers close together
+  - Left Click: Lower only the index finger from a neutral position or from peace sign
+  - Right Click: Lower only the middle finger from a neutral position or from peace sign
+  - Double Click: Bring index and middle fingers close together
+- **Drag & Drop**: Pinch your thumb and index finger together while keeping other fingers extended
 - **Scrolling**:
   - Vertical Scroll: Move hand up/down in scroll mode (thumb, index, middle fingers up)
   - Horizontal Scroll: Move hand left/right in scroll mode (thumb, index, middle fingers up)
-- **Drag and Drop**: Pinch and hold gesture to activate drag mode
-- **Customizable**: All parameters can be adjusted in the config file or through command-line arguments
-- **Debug Mode**: Real-time visual feedback and customizable parameters
+- **Neutral Mode**: Open hand with all fingers extended for no action
+- **Smooth Performance**: Optimized tracking with adaptive smoothing for more precise control
+- **Visual Feedback**: On-screen indicators for gestures and actions
+- **Customizable**: Adjust sensitivity, smoothing, and other parameters via config file or command-line
 
 ## Requirements
 
@@ -28,7 +30,7 @@ A Python-based virtual mouse that tracks hand movements using computer vision to
 1. Clone this repository:
    ```
    git clone https://github.com/prelekar0/virual_mouse.git
-   cd virual_mouse
+   
    ```
 
 2. Create a virtual environment (recommended):
@@ -47,16 +49,11 @@ A Python-based virtual mouse that tracks hand movements using computer vision to
    pip install -r requirements.txt
    ```
 
-4. Verify your setup:
-   ```
-   python virtual_mouse.py --show-landmarks --debug
-   ```
-
 ## Usage
 
 Run the virtual mouse:
 ```
-python virtual_mouse.py
+python main.py
 ```
 
 ### Command Line Options
@@ -64,95 +61,75 @@ python virtual_mouse.py
 You can customize the behavior using command-line arguments:
 
 ```
-python virtual_mouse.py --camera 0 --smoothing 7 --debug --show-landmarks
+python main.py --camera 0 --debug --show-landmarks --display-scale 1.0
 ```
 
 Available options:
 - `--camera`: Camera index (default: 0)
 - `--width`: Camera width (default: 640)
 - `--height`: Camera height (default: 480)
-- `--detection-confidence`: Hand detection confidence threshold (default: 0.75)
-- `--tracking-confidence`: Hand tracking confidence threshold (default: 0.75)
-- `--max-hands`: Maximum number of hands to detect (default: 1)
-- `--smoothing`: Mouse movement smoothing factor (default: 5)
+- `--smoothing`: Mouse movement smoothing factor (default: 0.5)
+- `--cooldown`: Time between clicks in seconds (default: 0.5)
+- `--show-landmarks`: Show hand landmarks
 - `--debug`: Enable debug information display
-- `--show-landmarks`: Enable hand landmark display
+- `--display-scale`: Scale factor for display window (0.1-1.0, default: 0.7)
 
-## Controls
-
-### Gestures
+## Gesture Guide
 
 | Gesture | Description | Action |
 |---------|-------------|--------|
-| Open Hand | All fingers extended | Neutral position |
-| Peace Sign | Index and middle fingers extended | Move cursor |
-| Middle Finger Only | Middle finger extended, others down | Left click |
-| Index Finger Only | Index finger extended, others down | Right click |
-| Index & Middle Close | Index and middle fingers extended and close together | Double click |
-| Three Fingers Up | Thumb, index, and middle fingers extended | Scroll mode |
+| ✋ Open Hand | All fingers extended | Neutral position (no action) |
+| ✌️ Peace Sign | Index and middle fingers extended | Move cursor |
+| 👇 Lower Index | From neutral, lower just the index finger | Left click |
+| 👉 Lower Middle | From neutral, lower just the middle finger | Right click |
+| 🤞 Fingers Close | Index and middle fingers close together | Double click |
+| 👌 Pinch | Thumb and index pinch with other fingers up | Drag and drop |
+| 👆 Three Fingers | Thumb, index, and middle fingers up | Scroll mode |
+
+### Tips for Best Performance
+
+- **Lighting**: Ensure consistent, good lighting on your hand
+- **Background**: Use a plain background for better detection
+- **Hand Position**: Keep your hand 30-60cm from the camera
+- **Camera Angle**: Position your camera to capture your hand comfortably
+- **Hand Orientation**: Keep your palm facing the camera for best recognition
 
 ### Keyboard Shortcuts
 
-While the application is running, you can use these keyboard shortcuts:
 - `ESC`: Quit the application
 - `D`: Toggle debug information display
 - `H`: Toggle hand landmark display
 
-## Configuration
-
-You can customize the behavior by editing `config.py`. The file contains settings for:
-
-- Camera properties
-- Hand tracking parameters
-- Mouse movement sensitivity and smoothing
-- Click and gesture thresholds
-- UI appearance and debug settings
-
 ## How It Works
 
-The application uses the following components:
+The application consists of three main components:
 
-1. **HandTracker** (`hand_tracking.py`): Uses MediaPipe to detect hand landmarks and implements gesture recognition algorithms
-2. **MouseController** (`mouse_controller.py`): Handles mouse actions including smoothed movement, clicking, scrolling, and dragging
-3. **VirtualMouse** (`virtual_mouse.py`): Connects hand tracking with mouse control and manages the application flow
-4. **Configuration** (`config.py`): Centralized configuration for all application parameters
+1. **HandTracker** (`hand_tracking.py`): Uses MediaPipe to detect hand landmarks and implements gesture recognition
+2. **MouseController** (`mouse_controller.py`): Handles mouse actions with adaptive sensitivity and smoothing
+3. **VirtualMouse** (`virtual_mouse.py`): Connects hand tracking with mouse control and manages application flow
 
 ## Troubleshooting
 
 ### Hand Detection Issues
-- Ensure good, consistent lighting conditions (avoid backlighting)
-- Position your hand within the camera frame at about 30-60 cm from the camera
-- Use a plain background for better detection
-- Adjust the detection confidence threshold (try values between 0.6-0.8)
-- Ensure your hand occupies about 1/3 of the frame for optimal detection
+- Ensure good lighting (avoid backlighting)
+- Position your hand within the camera frame
+- Use a plain background
+- Adjust hand position and angle to improve tracking
 
-### Mouse Movement Problems
-- If movements are too sensitive: Increase the smoothing factor (7-12)
-- If movements are too slow: Reduce the smoothing factor (3-5)
-- Adjust the margin value to change the active area size
-- Try disabling dynamic speed adjustment in `mouse_controller.py` if movements are inconsistent
+### Performance Issues
+- Try reducing the display scale with `--display-scale 0.5`
+- If movements are too sensitive, increase the smoothing factor
+- If clicks are too frequent, increase the cooldown value
+- If the application is lagging, close other resource-intensive applications
 
-### System Performance
-- If the application is running slowly, try:
-  - Reducing the camera resolution (e.g., 480x360)
-  - Processing fewer frames (modify `PROCESS_EVERY_N_FRAMES` in config.py)
-  - Closing other resource-intensive applications
+## Configuration
 
-### Calibration
-For better results, you may need to adjust parameters based on your hand size and lighting conditions:
-1. Run with the `--debug` flag
-2. Use the trackbars in the Controls window to adjust parameters in real-time
-3. Once you find good values, update them in `config.py`
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+You can customize the behavior by editing `config.py`, which contains settings for:
+- Camera properties
+- Hand tracking parameters
+- Mouse movement sensitivity
+- Click and gesture thresholds
+- Performance optimization settings
 
 ## License
 
@@ -163,4 +140,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [MediaPipe](https://mediapipe.dev/) for the hand tracking solution
 - [OpenCV](https://opencv.org/) for computer vision capabilities
 - [PyAutoGUI](https://pyautogui.readthedocs.io/) for mouse control
-- [Numpy](https://numpy.org/) for numerical operations 
