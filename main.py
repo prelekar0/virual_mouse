@@ -46,6 +46,14 @@ def parse_arguments():
     parser.add_argument("--no-landmarks", action="store_true",
                         help="Disable hand landmark display")
     
+    # Screen coverage
+    parser.add_argument("--coverage", type=float, default=config.SCREEN_COVERAGE_FACTOR,
+                        help=f"Screen coverage factor (default: {config.SCREEN_COVERAGE_FACTOR})")
+    
+    # Display options
+    parser.add_argument("--display-scale", type=float, default=0.7,
+                        help="Scale factor for the camera preview window (0.1-1.0, default: 0.7)")
+    
     # Parse arguments
     args = parser.parse_args()
     
@@ -60,6 +68,7 @@ def parse_arguments():
     config.MARGIN = args.margin
     config.DEBUG = not args.no_debug
     config.SHOW_LANDMARKS = not args.no_landmarks
+    config.SCREEN_COVERAGE_FACTOR = args.coverage
     
     return args
 
@@ -75,12 +84,17 @@ def print_instructions():
     print("  - Right Click: Form a peace sign (index and middle finger extended)")
     print("  - Scroll: Extend three fingers and move up/down or left/right")
     print("  - Drag: Pinch and hold for a moment")
+    print("\nTips for better hand detection:")
+    print("  - Use good lighting on your hand")
+    print("  - Position your hand 30-60 cm from the camera")
+    print("  - Use a plain background if possible")
+    print("  - Make clear, distinct gestures")
     print("\nKeyboard shortcuts:")
-    print("  - 'q': Quit the application")
+    print("  - 'ESC': Quit the application")
     print("  - 'd': Toggle debug information display")
     print("  - 'h': Toggle hand landmark display")
     print("=" * 60)
-    print("\nPress 'q' to quit the application at any time.\n")
+    print("\nPress 'ESC' to quit the application at any time.\n")
 
 
 def main():
@@ -92,8 +106,11 @@ def main():
     print_instructions()
     
     try:
-        # Create and run virtual mouse
-        virtual_mouse = VirtualMouse()
+        # Ensure display scale is within valid range
+        display_scale = max(0.1, min(args.display_scale, 1.0))
+        
+        # Create and run virtual mouse with the specified display scale
+        virtual_mouse = VirtualMouse(display_scale=display_scale)
         virtual_mouse.run()
     except KeyboardInterrupt:
         print("\nApplication stopped by user.")
